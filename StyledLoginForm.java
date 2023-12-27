@@ -10,19 +10,21 @@ public class StyledLoginForm extends JFrame {
     private JPasswordField passwordField;
 
     public StyledLoginForm() {
-        // Set up the frame
-        setTitle("Login Form");
-        setSize(400, 220); // Adjusted size
+        setTitle("Login ");
+        setSize(500, 600); // Adjusted size
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
-        getContentPane().setBackground(new Color(240, 240, 240));
+        getContentPane().setBackground(new Color(27, 90, 139));
+        ImageIcon logoIcon = new ImageIcon("path/to/your/logo.png"); // Replace with the path to your logo image
+        JLabel logoLabel = new JLabel(logoIcon);
+        
 
         // Create components
         JPanel mainPanel = new JPanel(new GridBagLayout());
-        mainPanel.setBackground(new Color(240, 240, 240));
+        mainPanel.setBackground(new   Color(27, 90, 139));
 
-        JLabel titleLabel = new JLabel("Login Form");
+        JLabel titleLabel = new JLabel("Login to System");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         titleLabel.setForeground(new Color(50, 50, 50));
 
@@ -115,12 +117,27 @@ public class StyledLoginForm extends JFrame {
             JOptionPane.showMessageDialog(this,
                     "Login Successful!\nWelcome, " + username + "!",
                     "Success", JOptionPane.INFORMATION_MESSAGE);
+
+            // Example: Open the System Dashboard after successful login
+            openSystemDashboard();
         } else {
             // Handle invalid login
             JOptionPane.showMessageDialog(this,
                     "Invalid login. Please enter valid credentials.",
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void openSystemDashboard() {
+        // Launch the System Dashboard after successful login
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new SystemDashboard().setVisible(true);
+                // Close the Login and Authentication UI
+                dispose();
+            }
+        });
     }
 
     public static void main(String[] args) {
