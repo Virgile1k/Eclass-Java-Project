@@ -63,18 +63,15 @@ public class AttendanceTrackingUI extends JFrame {
     }
 
     private void loadData() {
-        // Load data from the database and populate the student combo box
-        // This is a placeholder; replace it with your database connection code
-        // You might want to use a separate class or method for database operations
-        // For simplicity, I'm using a local database URL
-        String url = "jdbc:mysql://localhost:3306/e_class_management_system";
+
+        String url = "jdbc:mysql://localhost:3306/Brando_Db";
         String user = "root";
         String password = "";
 
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             String query = "SELECT * FROM student";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query);
-                 ResultSet resultSet = preparedStatement.executeQuery()) {
+                    ResultSet resultSet = preparedStatement.executeQuery()) {
 
                 studentComboBox.removeAllItems();
 
@@ -93,23 +90,21 @@ public class AttendanceTrackingUI extends JFrame {
             loadAttendanceData();
         } catch (SQLException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error loading data from the database.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error loading data from the database.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void loadAttendanceData() {
-        // Load attendance data from the database and populate the attendance list
-        // This is a placeholder; replace it with your database connection code
-        // You might want to use a separate class or method for database operations
-        // For simplicity, I'm using a local database URL
-        String url = "jdbc:mysql://localhost:3306/e_class_management_system";
+
+        String url = "jdbc:mysql://localhost:3306/Brando_Db";
         String user = "root";
         String password = "";
 
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             String query = "SELECT * FROM attendance";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query);
-                 ResultSet resultSet = preparedStatement.executeQuery()) {
+                    ResultSet resultSet = preparedStatement.executeQuery()) {
 
                 attendanceListModel.clear();
 
@@ -126,16 +121,12 @@ public class AttendanceTrackingUI extends JFrame {
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error loading attendance data from the database.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error loading attendance data from the database.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void addAttendance() {
-        // Implement adding attendance record to the database
-        // This is a placeholder; replace it with your database connection code
-        // You might want to use a separate class or method for database operations
-
-        // Retrieve selected student's information from the combo box
         String selectedStudentInfo = (String) studentComboBox.getSelectedItem();
         if (selectedStudentInfo == null) {
             JOptionPane.showMessageDialog(this, "Please select a student.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -145,47 +136,46 @@ public class AttendanceTrackingUI extends JFrame {
         String[] parts = selectedStudentInfo.split("\\s+"); // Split by whitespace
         String regNumber = parts[parts.length - 1].replace("(", "").replace(")", ""); // Get the registration number
 
-        // Retrieve date from input field
         String date = dateField.getText();
 
-        // Validate input (add your validation logic here)
-
-        // Insert into the database
-        String url = "jdbc:mysql://localhost:3306/e_class_management_system";
+        String url = "jdbc:mysql://localhost:3306/Brando_Db";
         String user = "root";
         String password = "";
 
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            // First, retrieve the student ID based on the registration number
             int studentId = getStudentIdByRegNumber(connection, regNumber);
-
+    
             if (studentId != -1) {
-                // Insert the attendance record
+                // Insert the attendance record without specifying 'attendance-id'
                 String insertQuery = "INSERT INTO attendance (student_id, course_id, date) VALUES (?, ?, ?)";
                 try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
                     preparedStatement.setInt(1, studentId);
-                    // Assuming a default course ID for simplicity; you may replace it with a proper course selection logic
+                    // Assuming a default course ID for simplicity; you may replace it with a proper
+                    // course selection logic
                     preparedStatement.setInt(2, 1);
                     preparedStatement.setString(3, date);
-
+    
                     int affectedRows = preparedStatement.executeUpdate();
                     if (affectedRows > 0) {
-                        JOptionPane.showMessageDialog(this, "Attendance added successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Attendance added successfully.", "Success",
+                                JOptionPane.INFORMATION_MESSAGE);
                         loadAttendanceData(); // Refresh the attendance list
                         clearFields();
                     } else {
-                        JOptionPane.showMessageDialog(this, "Failed to add attendance.", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Failed to add attendance.", "Error",
+                                JOptionPane.ERROR_MESSAGE);
                     }
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "Student not found in the database.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Student not found in the database.", "Error",
+                        JOptionPane.ERROR_MESSAGE);
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error adding attendance to the database.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error adding attendance to the database.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
-
     private int getStudentIdByRegNumber(Connection connection, String regNumber) throws SQLException {
         // Retrieve the student ID based on the registration number
         String query = "SELECT student_id FROM student WHERE registration_number = ?";

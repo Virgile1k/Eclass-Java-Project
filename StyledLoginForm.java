@@ -4,6 +4,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class StyledLoginForm extends JFrame {
     private JTextField usernameField;
@@ -11,30 +16,33 @@ public class StyledLoginForm extends JFrame {
 
     public StyledLoginForm() {
         setTitle("Login ");
-        setSize(500, 600); // Adjusted size
+        setSize(500, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
         getContentPane().setBackground(new Color(27, 90, 139));
-        ImageIcon logoIcon = new ImageIcon("path/to/your/logo.png"); // Replace with the path to your logo image
-        JLabel logoLabel = new JLabel(logoIcon);
-        
 
         // Create components
         JPanel mainPanel = new JPanel(new GridBagLayout());
-        mainPanel.setBackground(new   Color(27, 90, 139));
+        mainPanel.setBackground(new Color(27, 90, 139));
 
+        // Title
         JLabel titleLabel = new JLabel("Login to System");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        titleLabel.setForeground(new Color(50, 50, 50));
+        titleLabel.setForeground(Color.WHITE);
 
+        // Username and Password Labels
         JLabel usernameLabel = new JLabel("Username:");
         JLabel passwordLabel = new JLabel("Password:");
         usernameLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         passwordLabel.setFont(new Font("Arial", Font.PLAIN, 14));
 
+        // Username and Password Fields with rounded corners
         usernameField = new JTextField(20);
         passwordField = new JPasswordField(20);
+
+        // Set rounded corners for text fields
+ 
 
         JButton loginButton = new JButton("Login");
         loginButton.setFont(new Font("Arial", Font.BOLD, 14));
@@ -46,7 +54,7 @@ public class StyledLoginForm extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 10, 5, 10);
 
-        // Add components to main panel
+        // Add components to the main panel
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
@@ -77,11 +85,11 @@ public class StyledLoginForm extends JFrame {
         gbc.gridx = 1;
         gbc.gridy = 3;
         gbc.anchor = GridBagConstraints.CENTER;
-        gbc.ipady = 15; // Increased height of the button
-        gbc.ipadx = 40; // Increased width of the button
+        gbc.ipady = 15;
+        gbc.ipadx = 40;
         mainPanel.add(loginButton, gbc);
 
-        // Add main panel to the frame
+        // Add the main panel to the frame
         add(mainPanel);
 
         // Add action listener to the login button
@@ -102,34 +110,74 @@ public class StyledLoginForm extends JFrame {
             }
         });
 
-        // Set default button for the frame (Enter key triggers login button)
+        // Set the default button for the frame (Enter key triggers login button)
         getRootPane().setDefaultButton(loginButton);
     }
+ 
 
     private void performLogin() {
         String username = usernameField.getText();
         char[] password = passwordField.getPassword();
         String enteredPassword = new String(password);
 
+        // Database connection parameters
+        DatabaseConfig config = new DatabaseConfig();
+
         // For demonstration purposes, check if both fields are non-empty
         if (!username.isEmpty() && password.length > 0) {
-            // Simulate successful login
-            JOptionPane.showMessageDialog(this,
-                    "Login Successful!\nWelcome, " + username + "!",
-                    "Success", JOptionPane.INFORMATION_MESSAGE);
+            // Check the credentials against the database
+            if (checkCredentials(username, enteredPassword, config)) {
+                // Simulate successful login
+                JOptionPane.showMessageDialog(this,
+                        "Login Successful!\nWelcome, " + username + "!",
+                        "Success", JOptionPane.INFORMATION_MESSAGE);
 
-            // Example: Open the System Dashboard after successful login
-            openSystemDashboard();
+                // Example: Open the System Dashboard after successful login
+                openSystemDashboard();
+            } else {
+                // Handle invalid login
+                JOptionPane.showMessageDialog(this,
+                        "Invalid login. Please enter valid credentials.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
         } else {
-            // Handle invalid login
+            // Handle invalid input
             JOptionPane.showMessageDialog(this,
-                    "Invalid login. Please enter valid credentials.",
+                    "Please enter both username and password.",
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    private boolean checkCredentials(String username, String password, DatabaseConfig config) {
+        try {
+            // Load the JDBC driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+
+            // Establish the database connection
+            try (Connection connection = DriverManager.getConnection(config.getJdbcUrl(), config.getUsername(), config.getPassword())) {
+
+                // Prepare the SQL query
+                String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+                try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                    statement.setString(1, username);
+                    statement.setString(2, password);
+
+                    // Execute the query
+                    ResultSet resultSet = statement.executeQuery();
+
+                    // Check if the user exists in the database
+                    return resultSet.next();
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     private void openSystemDashboard() {
-        // Launch the System Dashboard after successful login
+        // Launch the System Dashboard after a successful login
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -147,5 +195,24 @@ public class StyledLoginForm extends JFrame {
                 new StyledLoginForm().setVisible(true);
             }
         });
+    }
+}
+
+class DatabaseConfig {
+    private final String url = "jdbc:mysql://localhost:3306/Brando_Db?useSSL=false";
+
+    private final String username = "root";
+    private final String password = ""; // Set your actual database password
+
+    public String getJdbcUrl() {
+        return url;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
     }
 }

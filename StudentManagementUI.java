@@ -21,7 +21,7 @@ public class StudentManagementUI extends JFrame {
         setLocationRelativeTo(null);
 
         initComponents();
-        loadData(); // Load initial data from the database
+        loadData();
     }
 
     private void initComponents() {
@@ -30,7 +30,6 @@ public class StudentManagementUI extends JFrame {
         lastNameField = new JTextField(20);
         regNumberField = new JTextField(20);
         emailField = new JTextField(20);
-
         // Buttons
         addButton = new JButton("Add");
         updateButton = new JButton("Update");
@@ -62,7 +61,6 @@ public class StudentManagementUI extends JFrame {
         add(buttonPanel, BorderLayout.CENTER);
         add(new JScrollPane(studentList), BorderLayout.SOUTH);
 
-        // Add action listeners
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -88,18 +86,15 @@ public class StudentManagementUI extends JFrame {
     }
 
     private void loadData() {
-        // Load data from the database and populate the student list
-        // This is a placeholder; replace it with your database connection code
-        // You might want to use a separate class or method for database operations
-        // For simplicity, I'm using a local database URL
-        String url = "jdbc:mysql://localhost:3306/e_class_management_system";
+
+        String url = "jdbc:mysql://localhost:3306/Brando_Db";
         String user = "root";
         String password = "";
 
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             String query = "SELECT * FROM student";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query);
-                 ResultSet resultSet = preparedStatement.executeQuery()) {
+                    ResultSet resultSet = preparedStatement.executeQuery()) {
 
                 studentListModel.clear();
 
@@ -116,14 +111,12 @@ public class StudentManagementUI extends JFrame {
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error loading data from the database.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error loading data from the database.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void addStudent() {
-        // Implement adding a student to the database
-        // This is a placeholder; replace it with your database connection code
-        // You might want to use a separate class or method for database operations
 
         // Retrieve values from input fields
         String firstName = firstNameField.getText();
@@ -134,13 +127,14 @@ public class StudentManagementUI extends JFrame {
         // Validate input (add your validation logic here)
 
         // Insert into the database
-        String url = "jdbc:mysql://localhost:3306/e_class_management_system";
+        String url = "jdbc:mysql://localhost:3306/Brando_Db";
         String user = "root";
         String password = "";
 
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "INSERT INTO student (first_name, last_name, registration_number, email_address) " +
-                    "VALUES (?, ?, ?, ?)";
+            String query = "INSERT INTO student (first_name, last_name, registration_number, email_address) VALUES (?, ?, ?, ?)";
+
+
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setString(1, firstName);
                 preparedStatement.setString(2, lastName);
@@ -149,7 +143,8 @@ public class StudentManagementUI extends JFrame {
 
                 int affectedRows = preparedStatement.executeUpdate();
                 if (affectedRows > 0) {
-                    JOptionPane.showMessageDialog(this, "Student added successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Student added successfully.", "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
                     loadData(); // Refresh the student list
                     clearFields();
                 } else {
@@ -158,31 +153,58 @@ public class StudentManagementUI extends JFrame {
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error adding student to the database.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error adding student to the database.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void updateStudent() {
-        // Implement updating a student in the database
-        // This is a placeholder; replace it with your database connection code
-        // You might want to use a separate class or method for database operations
-
+        // Placeholder for updating a student in the database
         // Retrieve values from input fields
+        String firstName = firstNameField.getText();
+        String lastName = lastNameField.getText();
+        String regNumber = regNumberField.getText();
+        String email = emailField.getText();
+
         // Validate input (add your validation logic here)
 
         // Update in the database
-        // Display success/failure messages
+        String url = "jdbc:mysql://localhost:3306/Brando_Db";
+        String user = "root";
+        String password = "";
+
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "UPDATE student SET first_name = ?, last_name = ?, email_address = ? WHERE registration_number = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, firstName);
+                preparedStatement.setString(2, lastName);
+                preparedStatement.setString(3, email);
+                preparedStatement.setString(4, regNumber);
+
+                int affectedRows = preparedStatement.executeUpdate();
+                if (affectedRows > 0) {
+                    JOptionPane.showMessageDialog(this, "Student updated successfully.", "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    loadData(); // Refresh the student list
+                    clearFields();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to update student.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error updating student in the database.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void deleteStudent() {
-        // Implement deleting a student from the database
-        // This is a placeholder; replace it with your database connection code
-        // You might want to use a separate class or method for database operations
-
-        // Retrieve selected student's information from the list
+        // Placeholder for deleting a student from the database
         int selectedIndex = studentList.getSelectedIndex();
         if (selectedIndex == -1) {
-            JOptionPane.showMessageDialog(this, "Please select a student to delete.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a student to delete.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -191,7 +213,7 @@ public class StudentManagementUI extends JFrame {
         String regNumber = parts[parts.length - 1].replace("(", "").replace(")", ""); // Get the registration number
 
         // Delete from the database
-        String url = "jdbc:mysql://localhost:3306/e_class_management_system";
+        String url = "jdbc:mysql://localhost:3306/Brando_Db";
         String user = "root";
         String password = "";
 
@@ -202,16 +224,19 @@ public class StudentManagementUI extends JFrame {
 
                 int affectedRows = preparedStatement.executeUpdate();
                 if (affectedRows > 0) {
-                    JOptionPane.showMessageDialog(this, "Student deleted successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Student deleted successfully.", "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
                     loadData(); // Refresh the student list
                     clearFields();
                 } else {
-                    JOptionPane.showMessageDialog(this, "Failed to delete student.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Failed to delete student.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error deleting student from the database.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error deleting student from the database.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -223,8 +248,6 @@ public class StudentManagementUI extends JFrame {
             String[] parts = selectedStudentInfo.split("\\s+"); // Split by whitespace
             String regNumber = parts[parts.length - 1].replace("(", "").replace(")", ""); // Get the registration number
 
-            // Retrieve student information from the database based on the registration number
-            // Display the information in the input fields for updating
         }
     }
 

@@ -48,9 +48,7 @@ public class CourseManagementUI {
             viewCoursesButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    // Handle view courses button action
-                    // You can fetch and display the list of courses from your data source
-                    // For now, let's just show a message
+
                     JOptionPane.showMessageDialog(frame, "Viewing Courses...");
                 }
             });
