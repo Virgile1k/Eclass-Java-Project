@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Sep 18, 2023 at 08:39 AM
+-- Host: localhost
+-- Generation Time: Jan 03, 2024 at 06:26 PM
 -- Server version: 10.4.28-MariaDB
--- PHP Version: 8.1.17
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,67 +18,8 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `e_class_management_system`
+-- Database: `Brando_Db`
 --
-
-DELIMITER $$
---
--- Procedures
---
-CREATE DEFINER=`root`@`localhost` PROCEDURE `CountStudentsWithSubstring` (IN `p_Substring` VARCHAR(20))   BEGIN
-    DECLARE total_students INT;
-
-    SELECT COUNT(*) INTO total_students
-    FROM student
-    WHERE RegistrationNumber LIKE CONCAT('%', p_Substring, '%');
-
-    SELECT total_students AS TotalStudentsWithSubstring;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteContentByCondition` (IN `p_MaxUploadDate` DATE)   BEGIN
-    DELETE FROM content WHERE UploadDate < p_MaxUploadDate;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteStudentsByCondition` (IN `p_names` VARCHAR(10))   BEGIN
-    DELETE FROM student WHERE registration_number LIKE content(p_names, '%');
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `DisplayStudentInfo` ()   BEGIN
-    -- Display information from the student table
-    SELECT * FROM student;
-
-    -- Display information from the assessment table
-    SELECT * FROM assessment;
-
-    -- Display information from the content table
-    SELECT * FROM content;
-
-    -- Display information from the course table
-    SELECT * FROM course;
-
-    -- Display information from the attendance table
-    SELECT * FROM attendance;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `InsertStudentData` (IN `p_first_name` VARCHAR(50), IN `p_last_name` VARCHAR(50), IN `p_registration_number` VARCHAR(20), IN `p_email_address` VARCHAR(100))   BEGIN
-    INSERT INTO student (first_name, last_name, registration_number, email_address)
-    VALUES (p_first_name,  p_registration_umber, p_email_address);
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateStudentAndContentInfo` (IN `p_student_id` INT, IN `p_studentfirst_name` VARCHAR(50), IN `p_studentlast_name` VARCHAR(50), IN `p_content_id` INT, IN `p_content_title` VARCHAR(255))   BEGIN
-    -- Update information in the student table
-    UPDATE student
-    SET first_name = p_studentfirst_same,
-        LastName = p_studentlast_ame
-    WHERE student_id = p_student_id;
-
-    -- Update information in the content table
-    UPDATE content
-    SET content_title = p_content_title
-    WHERE content_id = p_content_id;
-END$$
-
-DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -94,14 +35,6 @@ CREATE TABLE `assessment` (
   `grading_rublic` varchar(6) NOT NULL,
   `course_id` int(23) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `assessment`
---
-
-INSERT INTO `assessment` (`assessment_id`, `assessment_title`, `due_date`, `maximum_score`, `grading_rublic`, `course_id`) VALUES
-(1, 'cat', '0000-00-00', '', '', 0),
-(2, 'cat1', '2023-08-30', '30', 'A', 3);
 
 -- --------------------------------------------------------
 
@@ -190,22 +123,21 @@ INSERT INTO `course` (`course_id`, `course_title`, `start_date`, `end_date`, `en
 --
 
 CREATE TABLE `student` (
-  `student_id` int(43) NOT NULL,
+  `student_id` int(11) NOT NULL,
   `first_name` varchar(23) NOT NULL,
   `last_name` varchar(34) NOT NULL,
   `registration_number` int(12) NOT NULL,
-  `email_address` varchar(30) NOT NULL,
-  `course_id` int(23) NOT NULL
+  `email_address` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `student`
 --
 
-INSERT INTO `student` (`student_id`, `first_name`, `last_name`, `registration_number`, `email_address`, `course_id`) VALUES
-(1, 'kalisa', 'john', 222009238, 'kalisa@1gmail.com', 1),
-(2, 'hirwa', 'honore', 222009876, 'hh2@gmail.com', 2),
-(3, 'Jane', 'Smith', 654321, 'jane.smith@example.com', 0);
+INSERT INTO `student` (`student_id`, `first_name`, `last_name`, `registration_number`, `email_address`) VALUES
+(1, 'kalisa', 'john', 222009238, 'kalisa@1gmail.com'),
+(2, 'hirwa', 'honore', 222009876, 'hh2@gmail.com'),
+(3, 'Jane', 'Smith', 654321, 'jane.smith@example.com');
 
 --
 -- Triggers `student`
@@ -225,33 +157,34 @@ END
 $$
 DELIMITER ;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `id` int(10) NOT NULL,
+  `username` varchar(200) NOT NULL,
+  `email` varchar(200) NOT NULL,
+  `phone` varchar(200) DEFAULT NULL,
+  `address` varchar(200) DEFAULT NULL,
+  `password` varchar(200) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `username`, `email`, `phone`, `address`, `password`) VALUES
+(1, 'Brandice', 'brandice@gmail.com', '+250782689127', 'Huye', '12345678'),
+(2, 'vg', 'vg@gmail.com', '+250782689127', NULL, '12345678'),
+(3, 'Bonehur', 'ndayambajevg16@gmail.com', '0722189351', NULL, 'NDAYAMBAJE@vg2022'),
+(4, 'vplanet', 'virgilendayambaje@gmail.com', '+250722189351', NULL, 'Test@12345');
+
 --
 -- Indexes for dumped tables
 --
-
---
--- Indexes for table `assessment`
---
-ALTER TABLE `assessment`
-  ADD PRIMARY KEY (`assessment_id`);
-
---
--- Indexes for table `attendance`
---
-ALTER TABLE `attendance`
-  ADD PRIMARY KEY (`attendance-id`);
-
---
--- Indexes for table `content`
---
-ALTER TABLE `content`
-  ADD PRIMARY KEY (`content-id`);
-
---
--- Indexes for table `course`
---
-ALTER TABLE `course`
-  ADD PRIMARY KEY (`course_id`);
 
 --
 -- Indexes for table `student`
@@ -260,38 +193,27 @@ ALTER TABLE `student`
   ADD PRIMARY KEY (`student_id`);
 
 --
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
-
---
--- AUTO_INCREMENT for table `assessment`
---
-ALTER TABLE `assessment`
-  MODIFY `assessment_id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `attendance`
---
-ALTER TABLE `attendance`
-  MODIFY `attendance-id` int(34) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT for table `content`
---
-ALTER TABLE `content`
-  MODIFY `content-id` int(34) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `course`
---
-ALTER TABLE `course`
-  MODIFY `course_id` int(34) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `student`
 --
 ALTER TABLE `student`
-  MODIFY `student_id` int(43) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

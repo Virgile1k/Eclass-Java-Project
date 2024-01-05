@@ -2,6 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class AssessmentManagementUI {
     private static class Assessment {
@@ -40,13 +44,24 @@ public class AssessmentManagementUI {
             addAssessmentButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    Assessment newAssessment = showAddAssessmentDialog(frame);
-                    if (newAssessment != null) {
-                        // Display or store the assessment details as needed
-                        assessmentTextArea.append("Assessment Title: " + newAssessment.assessmentTitle + "\n");
-                        assessmentTextArea.append("Due Date: " + newAssessment.dueDate + "\n");
-                        assessmentTextArea.append("Maximum Score: " + newAssessment.maximumScore + "\n");
-                        assessmentTextArea.append("Grading Rubric: " + newAssessment.gradingRubric + "\n");
+                    try {
+                        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/Brando_Db",
+                                "root", "");
+
+                        Assessment newAssessment = showAddAssessmentDialog(frame);
+                        if (newAssessment != null) {
+                            saveAssessmentToDatabase(connection, newAssessment);
+
+                            assessmentTextArea.append("Assessment Title: " + newAssessment.assessmentTitle + "\n");
+                            assessmentTextArea.append("Due Date: " + newAssessment.dueDate + "\n");
+                            assessmentTextArea.append("Maximum Score: " + newAssessment.maximumScore + "\n");
+                            assessmentTextArea.append("Grading Rubric: " + newAssessment.gradingRubric + "\n");
+
+                            connection.close();
+                        }
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(frame, "Error connecting to the database.");
                     }
                 }
             });
@@ -54,7 +69,6 @@ public class AssessmentManagementUI {
             updateAssessmentButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    // Handle update assessment button action
                     JOptionPane.showMessageDialog(frame, "Updating Assessment...");
                 }
             });
@@ -62,7 +76,6 @@ public class AssessmentManagementUI {
             deleteAssessmentButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    // Handle delete assessment button action
                     JOptionPane.showMessageDialog(frame, "Deleting Assessment...");
                 }
             });
@@ -80,7 +93,7 @@ public class AssessmentManagementUI {
         JTextField dueDateField = new JTextField();
         JTextField maxScoreField = new JTextField();
         JTextField rubricField = new JTextField();
-
+        
         JPanel panel = new JPanel(new GridLayout(4, 2));
         panel.add(new JLabel("Assessment Title:"));
         panel.add(titleField);
@@ -89,6 +102,7 @@ public class AssessmentManagementUI {
         panel.add(new JLabel("Maximum Score:"));
         panel.add(maxScoreField);
         panel.add(new JLabel("Grading Rubric:"));
+     
         panel.add(rubricField);
 
         int result = JOptionPane.showConfirmDialog(parent, panel, "Add Assessment", JOptionPane.OK_CANCEL_OPTION);
@@ -106,5 +120,17 @@ public class AssessmentManagementUI {
         }
 
         return null;
+    }
+
+    private static void saveAssessmentToDatabase(Connection connection, Assessment assessment) throws SQLException {
+        String sql = "INSERT INTO assessment (assessment_id, assessment_title, due_date, maximum_score, grading_rublic) VALUES (?, ?, ?, ?, ?)";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, assessment.assessmentTitle);
+            preparedStatement.setString(2, assessment.dueDate);
+            preparedStatement.setInt(3, assessment.maximumScore);
+            preparedStatement.setString(4, assessment.gradingRubric);
+            preparedStatement.executeUpdate();
+        }
     }
 }
