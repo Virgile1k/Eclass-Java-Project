@@ -1,3 +1,4 @@
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -16,6 +17,7 @@ public class AttendanceTrackingUI extends JFrame {
     private JList<String> attendanceList;
 
     public AttendanceTrackingUI() {
+        setBackground(new Color(52, 101, 164));
         setTitle("Attendance Tracking UI");
         setSize(500, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -32,26 +34,36 @@ public class AttendanceTrackingUI extends JFrame {
         dateField = new JTextField(15);
         // Add Attendance button
         addAttendanceButton = new JButton("Add Attendance");
+        addAttendanceButton.setBackground(new Color(78, 154, 6));
+        addAttendanceButton.setBounds(176, 47, 147, 25);
 
         // List for displaying attendance records
         attendanceListModel = new DefaultListModel<>();
         attendanceList = new JList<>(attendanceListModel);
+        attendanceList.setBackground(new Color(52, 101, 164));
 
         // Layout
-        setLayout(new BorderLayout());
+        getContentPane().setLayout(new BorderLayout());
 
         JPanel inputPanel = new JPanel(new GridLayout(2, 2, 10, 10));
-        inputPanel.add(new JLabel("Student:"));
+        inputPanel.setBackground(new Color(52, 101, 164));
+        JLabel label = new JLabel("Student:");
+        label.setForeground(new Color(238, 238, 236));
+        inputPanel.add(label);
         inputPanel.add(studentComboBox);
-        inputPanel.add(new JLabel("Date (YYYY-MM-DD):"));
+        JLabel label_1 = new JLabel("Date (YYYY-MM-DD):");
+        label_1.setForeground(new Color(238, 238, 236));
+        inputPanel.add(label_1);
         inputPanel.add(dateField);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout());
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(new Color(52, 101, 164));
+        buttonPanel.setLayout(null);
         buttonPanel.add(addAttendanceButton);
 
-        add(inputPanel, BorderLayout.NORTH);
-        add(buttonPanel, BorderLayout.CENTER);
-        add(new JScrollPane(attendanceList), BorderLayout.SOUTH);
+        getContentPane().add(inputPanel, BorderLayout.NORTH);
+        getContentPane().add(buttonPanel, BorderLayout.CENTER);
+        getContentPane().add(new JScrollPane(attendanceList), BorderLayout.SOUTH);
 
         // Add action listeners
         addAttendanceButton.addActionListener(new ActionListener() {
@@ -64,8 +76,8 @@ public class AttendanceTrackingUI extends JFrame {
 
     private void loadData() {
 
-        String url = "jdbc:mysql://localhost:3306/Brando_Db";
-        String user = "root";
+        String url = "jdbc:mysql://localhost:3307/Brando_Db";
+        String user = "vg";
         String password = "";
 
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
@@ -97,8 +109,8 @@ public class AttendanceTrackingUI extends JFrame {
 
     private void loadAttendanceData() {
 
-        String url = "jdbc:mysql://localhost:3306/Brando_Db";
-        String user = "root";
+        String url = "jdbc:mysql://localhost:3307/Brando_Db";
+        String user = "vg";
         String password = "";
 
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
@@ -138,13 +150,13 @@ public class AttendanceTrackingUI extends JFrame {
 
         String date = dateField.getText();
 
-        String url = "jdbc:mysql://localhost:3306/Brando_Db";
-        String user = "root";
+        String url = "jdbc:mysql://localhost:3307/Brando_Db";
+        String user = "vg";
         String password = "";
 
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             int studentId = getStudentIdByRegNumber(connection, regNumber);
-    
+
             if (studentId != -1) {
                 // Insert the attendance record without specifying 'attendance-id'
                 String insertQuery = "INSERT INTO attendance (student_id, course_id, date) VALUES (?, ?, ?)";
@@ -154,7 +166,7 @@ public class AttendanceTrackingUI extends JFrame {
                     // course selection logic
                     preparedStatement.setInt(2, 1);
                     preparedStatement.setString(3, date);
-    
+
                     int affectedRows = preparedStatement.executeUpdate();
                     if (affectedRows > 0) {
                         JOptionPane.showMessageDialog(this, "Attendance added successfully.", "Success",
@@ -176,6 +188,7 @@ public class AttendanceTrackingUI extends JFrame {
                     JOptionPane.ERROR_MESSAGE);
         }
     }
+
     private int getStudentIdByRegNumber(Connection connection, String regNumber) throws SQLException {
         // Retrieve the student ID based on the registration number
         String query = "SELECT student_id FROM student WHERE registration_number = ?";
@@ -203,3 +216,5 @@ public class AttendanceTrackingUI extends JFrame {
         });
     }
 }
+
+// vplanet check github

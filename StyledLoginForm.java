@@ -199,9 +199,9 @@ public class StyledLoginForm extends JFrame {
 }
 
 class DatabaseConfig {
-    private final String url = "jdbc:mysql://localhost:3306/Brando_Db?useSSL=false";
+    private final String url = "jdbc:mysql://localhost:3307/Brando_Db?useSSL=false";
 
-    private final String username = "root";
+    private final String username = "vg";
     private final String password = ""; // Set your actual database password
 
     public String getJdbcUrl() {
